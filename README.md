@@ -1,5 +1,4 @@
-<pre>
-    \```yaml
+\```yaml
     ---
 openapi: 3.1.0
 info:
@@ -418,5 +417,5 @@ components:
         - type
       title: ValidationError
 
-    \```
-</pre>
+\```
+
