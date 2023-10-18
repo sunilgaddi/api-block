@@ -45,3 +45,11 @@ jnjnjnjn,,,
     // good Response
 }
 {% endswagger-response %} 
+
+<details>
+
+<summary>Expandable title</summary>
+
+Expandable content
+
+</details>
