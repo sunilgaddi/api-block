@@ -1,5 +1,5 @@
-\```yaml
-    ---
+```yaml
+---
 openapi: 3.1.0
 info:
   title: GenAI Stack
@@ -417,5 +417,5 @@ components:
         - type
       title: ValidationError
 
-\```
+```
 
