@@ -1,6 +1,6 @@
 # api-block
 
-{% swagger-parameter in="path" name="id" type="String" %}
+% swagger-parameter in="path" name="id" type="String" %
 Description
 {% endswagger-parameter %}
 
