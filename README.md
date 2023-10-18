@@ -1,180 +1,422 @@
-# api-block
+<pre>
+    ```yaml
+    ---
+openapi: 3.1.0
+info:
+  title: GenAI Stack
+  version: 0.2.5
+paths:
+  "/api/session":
+    get:
+      tags:
+        - session
+      summary: Sessions List
+      operationId: sessions_list_api_session_get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - items:
+                      "$ref": "#/components/schemas/StackSessionResponseModel"
+                    type: array
+                  - items: {}
+                    type: array
+                title: Response Sessions List Api Session Get
+    post:
+      tags:
+        - session
+      summary: Create Session
+      operationId: create_session_api_session_post
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/StackSessionResponseModel"
+  "/api/session/{session_id}":
+    get:
+      tags:
+        - session
+      summary: Get Session
+      operationId: get_session_api_session__session_id__get
+      parameters:
+        - required: true
+          schema:
+            type: integer
+            title: Session Id
+          name: session_id
+          in: path
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/StackSessionResponseModel"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - session
+      summary: Delete Session
+      operationId: delete_session_api_session__session_id__delete
+      parameters:
+        - required: true
+          schema:
+            type: integer
+            title: Session Id
+          name: session_id
+          in: path
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                title: Response Delete Session Api Session  Session Id  Delete
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/retriever/retrieve":
+    get:
+      tags:
+        - retriever
+      summary: Retrieve
+      operationId: retrieve_api_retriever_retrieve_get
+      parameters:
+        - required: true
+          schema:
+            type: integer
+            title: Session Id
+          name: session_id
+          in: query
+        - required: true
+          schema:
+            type: string
+            title: Query
+          name: query
+          in: query
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/RetrieverResponseModel"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/vectordb/add-documents":
+    post:
+      tags:
+        - vectordb
+      summary: Add Documents
+      operationId: add_documents_api_vectordb_add_documents_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/RetrieverAddDocumentsRequestModel"
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/RetrieverAddDocumentsResponseModel"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/vectordb/search":
+    get:
+      tags:
+        - vectordb
+      summary: Search
+      operationId: search_api_vectordb_search_get
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/RetrieverSearchRequestModel"
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/RetrieverSearchResponseModel"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/etl/submit-job":
+    post:
+      tags:
+        - etl
+      summary: Extract
+      operationId: extract_api_etl_submit_job_post
+      parameters:
+        - required: false
+          schema:
+            type: integer
+            title: Session Id
+          name: session_id
+          in: query
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ETLJobResponseType"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/model/predict":
+    post:
+      tags:
+        - model
+      summary: Predict
+      operationId: predict_api_model_predict_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/ModelRequestModel"
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ModelResponseModel"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+components:
+  schemas:
+    DocumentType:
+      properties:
+        page_content:
+          type: string
+          title: Page Content
+        metadata:
+          type: object
+          title: Metadata
+      type: object
+      required:
+        - page_content
+        - metadata
+      title: DocumentType
+    ETLJobResponseType:
+      properties:
+        id:
+          type: integer
+          title: Id
+        session_id:
+          type: integer
+          title: Session Id
+        status:
+          "$ref": "#/components/schemas/ETLJobStatus"
+        metadata:
+          type: object
+          title: Metadata
+      type: object
+      required:
+        - id
+        - session_id
+        - status
+      title: ETLJobResponseType
+    ETLJobStatus:
+      enum:
+        - pending
+        - processing
+        - completed
+      title: ETLJobStatus
+      description: An enumeration.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            "$ref": "#/components/schemas/ValidationError"
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ModelRequestModel:
+      properties:
+        prompt:
+          type: string
+          title: Prompt
+      type: object
+      required:
+        - prompt
+      title: ModelRequestModel
+    ModelResponseModel:
+      properties:
+        output:
+          type: string
+          title: Output
+      type: object
+      required:
+        - output
+      title: ModelResponseModel
+    RetrieverAddDocumentsRequestModel:
+      properties:
+        session_id:
+          type: integer
+          title: Session Id
+        documents:
+          items:
+            "$ref": "#/components/schemas/DocumentType"
+          type: array
+          title: Documents
+      type: object
+      required:
+        - session_id
+        - documents
+      title: RetrieverAddDocumentsRequestModel
+    RetrieverAddDocumentsResponseModel:
+      properties:
+        session_id:
+          type: integer
+          title: Session Id
+        documents:
+          items:
+            "$ref": "#/components/schemas/DocumentType"
+          type: array
+          title: Documents
+      type: object
+      required:
+        - session_id
+        - documents
+      title: RetrieverAddDocumentsResponseModel
+    RetrieverResponseModel:
+      properties:
+        session_id:
+          type: integer
+          title: Session Id
+        output:
+          type: string
+          title: Output
+      type: object
+      required:
+        - session_id
+        - output
+      title: RetrieverResponseModel
+    RetrieverSearchRequestModel:
+      properties:
+        session_id:
+          type: integer
+          title: Session Id
+        query:
+          type: string
+          title: Query
+      type: object
+      required:
+        - session_id
+        - query
+      title: RetrieverSearchRequestModel
+    RetrieverSearchResponseModel:
+      properties:
+        session_id:
+          type: integer
+          title: Session Id
+        documents:
+          items:
+            "$ref": "#/components/schemas/DocumentType"
+          type: array
+          title: Documents
+      type: object
+      required:
+        - session_id
+        - documents
+      title: RetrieverSearchResponseModel
+    StackSessionResponseModel:
+      properties:
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        modified_at:
+          type: string
+          format: date-time
+          title: Modified At
+        id:
+          type: integer
+          title: Id
+        stack_id:
+          type: integer
+          title: Stack Id
+        meta_data:
+          type: object
+          title: Meta Data
+      type: object
+      required:
+        - created_at
+        - id
+        - stack_id
+        - meta_data
+      title: StackSessionResponseModel
+      description: |-
+        Stack Session Response Data Model.
 
-% swagger-parameter in="path" name="id" type="String" %
-Description
-{% endswagger-parameter %}
+        Args:
+            id : int
+            stack_id : int
+            meta_data : dict
+            created_at : datetime
+            modified_at : datetime
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+        - loc
+        - msg
+        - type
+      title: ValidationError
 
-{% swagger-parameter in="query" name="id" type="String" required="true" %}
-Description
-{% endswagger-parameter %}
-
-{% swagger-parameter in="header" name="id" type="String" %}
-Description
-{% endswagger-parameter %}
-
-{% swagger-parameter in="cookie" name="id" type="String" %}
-Description
-{% endswagger-parameter %}
-
-{% swagger-parameter in="body" name="id" type="String" %}
-Description
-{% endswagger-parameter %}
-
-{% swagger-response status="200: OK" description="Description" %}
-```javascript
-{
-    // good Response
-}
-```
-{% endswagger-response %}
-jnjnjnjn,,,
-
-{% swagger-parameter in="path" name="id" type="String" %} Description {% endswagger-parameter %}
-
-{% swagger-parameter in="query" name="id" type="String" required="true" %} Description {% endswagger-parameter %}
-
-{% swagger-parameter in="header" name="id" type="String" %} Description {% endswagger-parameter %}
-
-{% swagger-parameter in="cookie" name="id" type="String" %} Description {% endswagger-parameter %}
-
-{% swagger-parameter in="body" name="id" type="String" %} Description {% endswagger-parameter %}
-
-{% swagger-response status="200: OK" description="Description" %}
-
-{
-    // good Response
-}
-{% endswagger-response %} 
-
-<details>
-
-<summary>Expandable title</summary>
-
-Expandable content
-
-</details>
-
-
-### Get Resource
-
-- **URL**: `/api/resource/{id}`
-- **Method**: GET
-- **Description**: Retrieve a resource by its ID.
-
-#### Request
-
-No request body is required.
-
-#### Parameters
-
-| Parameter | Type    | Description        |
-| --------- | ------- | ------------------ |
-| id        | Integer | The ID of the resource to retrieve. |
-
-#### Response
-
-- **200 OK**:
-
-```json
-{
-  "id": 1,
-  "name": "Resource Name",
-  "description": "A sample resource"
-}
-404 Not Found:
-json
-Copy code
-{
-  "message": "Resource not found"
-}
-Create Resource
-URL: /api/resource
-Method: POST
-Description: Create a new resource.
-Request
-Headers:
-
-Content-Type: application/json
-Parameters
-Parameter	Type	Description
-name	String	The name of the resource.
-description	String	A description of the resource.
-Response
-201 Created:
-json
-Copy code
-{
-  "id": 2,
-  "name": "New Resource",
-  "description": "A newly created resource"
-}
-400 Bad Request:
-json
-Copy code
-{
-  "message": "Validation failed"
-}
-Update Resource
-URL: /api/resource/{id}
-Method: PUT
-Description: Update an existing resource.
-Request
-Headers:
-
-Content-Type: application/json
-Parameters
-Parameter	Type	Description
-id	Integer	The ID of the resource to update.
-name	String	The updated name of the resource.
-description	String	The updated description of the resource.
-Response
-200 OK:
-json
-Copy code
-{
-  "id": 2,
-  "name": "Updated Resource",
-  "description": "An updated resource"
-}
-404 Not Found:
-json
-Copy code
-{
-  "message": "Resource not found"
-}
-Delete Resource
-URL: /api/resource/{id}
-Method: DELETE
-Description: Delete a resource by its ID.
-Request
-No request body is required.
-
-Parameters
-Parameter	Type	Description
-id	Integer	The ID of the resource to delete.
-Response
-204 No Content:
-No content is returned on success.
-
-404 Not Found:
-json
-Copy code
-{
-  "message": "Resource not found"
-}
-Error Codes
-400 Bad Request: The request is invalid.
-401 Unauthorized: Authentication failed.
-404 Not Found: The requested resource was not found.
-500 Internal Server Error: An unexpected error occurred.
-Rate Limits
-Requests are limited to 100 per minute per API key.
-Versioning
-The API is currently at version 1.
-
-This is a basic template for documenting an API using OpenAPI in Markdown format for GitBook. You can customize and expand this template to suit your specific API's needs and requirements.
-
-
-
-
-
+    ```
+</pre>
